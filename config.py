@@ -19,3 +19,4 @@ INIT = 0
 MAPA = 1
 QUIT = 2
 INSPER = 3
+PSCINA = 4

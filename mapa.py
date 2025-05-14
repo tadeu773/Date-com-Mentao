@@ -57,7 +57,7 @@ def tela_mapa(tela):
                 running = False
 
             if botao_piscina.foi_clicado(event):
-                state = QUIT
+                state = PSCINA
                 running = False
 
         tela.fill(BLACK)  # Limpa a tela
