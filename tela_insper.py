@@ -3,31 +3,39 @@ import random
 from os import path
 from config import *
 from classes import *
-
-pygame.mixer.init()
-pygame.mixer.music.load(path.join('penelope.mp3'))
-pygame.mixer.music.play(-1)
+import narrativas
+import moods
 
 def tela_insper(screen):
     clock = pygame.time.Clock()
 
-    background = pygame.image.load(path.join('insper_inside.jpeg')).convert()
+    # Carrega o fundo
+    background = pygame.image.load(path.join("Fundos", 'insper_inside.jpeg')).convert()
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
-    TAMANHO_PERSONAGEM = (300, 300)
 
-    fala1_mentao = Mentao.fala("eae mano como se ta, tudo bem com você? Bora dar um rolê depois da aula?")
-
+    # Carrega as imagens dos moods após a tela existir
     imagens_mood = {
-    "feliz": carrega_imagem('feliz.png'),
-    "surpreso": carrega_imagem('surpreso.png'),
-    "briga": carrega_imagem('briga.png'),
-    "bravo": carrega_imagem('bravo.png'),
-    "bebendo": carrega_imagem('bebendo.png')
-}
+        "feliz": carrega_imagem('feliz.png'),
+        "surpreso": carrega_imagem('surpreso.png'),
+        "briga": carrega_imagem('briga.png'),
+        "bravo": carrega_imagem('bravo.png'),
+        "bebendo": carrega_imagem('bebendo.png')
+    }
 
-    mood_atual = "feliz"
+    # Começa a narrativa
+    narrativas.criar_cena_inicial()
 
+    # Define estado inicial da tela
+    state = INSPER
     running = True
+
+    def sair_para_mapa():
+        nonlocal state, running
+        state = MAPA
+        running = False
+
+    botao_sair = BotaoSair(sair_para_mapa)
+
     while running:
         clock.tick(FPS)
 
@@ -35,30 +43,31 @@ def tela_insper(screen):
             if event.type == pygame.QUIT:
                 state = QUIT
                 running = False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
-                    mood_atual = "feliz"
-                elif event.key == pygame.K_2:
-                    mood_atual = "briga"
-                elif event.key == pygame.K_3:
-                    mood_atual = "surpreso"
-                elif event.key == pygame.K_4:
-                    mood_atual = "bebendo"
-                elif event.key == pygame.K_5:
-                    mood_atual = "bravo"
 
-        personagem_img = imagens_mood[mood_atual]
-        personagem_rect = personagem_img.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+            # Verifica cliques nos botões da narrativa
+            for botao in narrativas.botoes_atuais:
+                botao.checar_clique(event)
 
-        
+            # Verifica clique no botão sair
+            botao_sair.checar_clique(event)
 
-        # Dentro do loop de desenho
-        
+        # Atualiza o humor do personagem baseado no estado atual
+        personagem_img = imagens_mood[moods.mood_mentao]
+        personagem_rect = personagem_img.get_rect(center=(WIDTH // 2, 150))
 
+        # Desenha a interface da tela
         screen.fill(BLACK)
         screen.blit(background, (0, 0))
         screen.blit(personagem_img, personagem_rect)
-        Mentao.exibir(screen, fala1_mentao)
+
+        if narrativas.fala_mentao is not None:
+            Mentao.exibir(screen, narrativas.fala_mentao)
+
+        for botao in narrativas.botoes_atuais:
+            botao.desenhar(screen)
+
+        botao_sair.desenhar(screen)
+
         pygame.display.flip()
 
     return state

@@ -7,20 +7,20 @@ from classes import *
 def tela_mapa(tela):
     clock = pygame.time.Clock()
 
-    mapa = pygame.image.load(path.join('mapa.png')).convert()
+    mapa = pygame.image.load(path.join("Fundos", 'mapa.png')).convert()
     mapa = pygame.transform.scale(mapa, (WIDTH, HEIGHT))
     mapa_rect = mapa.get_rect()
 
 
-    insperimg = pygame.image.load(path.join('insper.png')).convert()
+    insperimg = pygame.image.load(path.join("Botoes", 'insper.png')).convert()
     insperimg = pygame.transform.scale(insperimg, (200, 100))
     botao_insper = BotaoImagem(insperimg, 50, 350)
 
-    jkimg = pygame.image.load(path.join("JK.jpg")).convert()
+    jkimg = pygame.image.load(path.join("Botoes", "JK.jpg")).convert()
     jkimg = pygame.transform.scale(jkimg, (200, 100))
     botao_jk = BotaoImagem(jkimg, 600, 350)
 
-    maderoimg = pygame.image.load(path.join("madero.jpg")).convert()
+    maderoimg = pygame.image.load(path.join("Botoes", "madero.jpg")).convert()
     maderoimg = pygame.transform.scale(maderoimg, (200, 100))
     botao_madero = BotaoImagem(maderoimg, 550, 150)
 

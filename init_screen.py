@@ -6,13 +6,13 @@ from config import *
 
 
 pygame.mixer.init()
-pygame.mixer.music.load(path.join('penelope.mp3'))
+pygame.mixer.music.load(path.join("Musicas", 'penelope.mp3'))
 pygame.mixer.music.play(-1)  
 
 def init_screen(screen):
     clock = pygame.time.Clock()
 
-    background = pygame.image.load(path.join('inicio.png')).convert()
+    background = pygame.image.load(path.join("Fundos", 'inicio.png')).convert()
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
     background_rect = background.get_rect()
 
