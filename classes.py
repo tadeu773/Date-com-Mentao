@@ -1,13 +1,17 @@
 import pygame
 from os import path
 
+# --- Caminhos absolutos relativos a este script ---
+SCRIPT_DIR    = path.dirname(path.abspath(__file__))
+FOTOS_DIR     = path.join(SCRIPT_DIR, "fotos_mentao")
+
 class Botao:
     def __init__(self, x, y, largura, altura, texto, cor, cor_texto=(255, 255, 255), fonte=None):
         self.rect = pygame.Rect(x, y, largura, altura)
         self.texto = texto
         self.cor = cor
         self.cor_texto = cor_texto
-        self.fonte = fonte or pygame.font.Font(None, 40)  # Fonte padrão se não for passada
+        self.fonte = fonte or pygame.font.Font(None, 40)
 
         # Pré-renderiza o texto
         self.texto_renderizado = self.fonte.render(self.texto, True, self.cor_texto)
@@ -18,10 +22,7 @@ class Botao:
         tela.blit(self.texto_renderizado, self.texto_rect)
 
     def foi_clicado(self, evento):
-        if evento.type == pygame.MOUSEBUTTONUP:
-            if self.rect.collidepoint(evento.pos):
-                return True
-        return False
+        return evento.type == pygame.MOUSEBUTTONUP and self.rect.collidepoint(evento.pos)
     
 class BotaoImagem:
     def __init__(self, imagem, x, y):
@@ -32,88 +33,77 @@ class BotaoImagem:
         tela.blit(self.imagem, self.rect)
 
     def foi_clicado(self, evento):
-        if evento.type == pygame.MOUSEBUTTONUP:
-            if self.rect.collidepoint(evento.pos):
-                return True
-        return False
+        return evento.type == pygame.MOUSEBUTTONUP and self.rect.collidepoint(evento.pos)
     
 def carrega_imagem(nome_arquivo):
-    imagem = pygame.image.load(path.join("fotos_mentao", nome_arquivo)).convert_alpha()
+    """
+    Carrega e retorna uma imagem de 'fotos_mentao', já escalonada para 450×450.
+    """
+    caminho = path.join(FOTOS_DIR, nome_arquivo)
+    if not path.exists(caminho):
+        raise FileNotFoundError(f"Imagem não encontrada: {caminho}")
+    imagem = pygame.image.load(caminho).convert_alpha()
     imagem = pygame.transform.scale(imagem, (450, 450))
     return imagem
 
 class Mentao:
     @staticmethod
     def fala(texto, largura_caixa=600, altura_caixa=120, margem=20):
-        # Fonte Comic Sans MS azul
         fonte = pygame.font.SysFont("Comic Sans MS", 24)
-        
-        # Quebra o texto em várias linhas se necessário
         palavras = texto.split(' ')
         linhas = []
         linha_atual = ""
-        
         for palavra in palavras:
-            teste_linha = linha_atual + palavra + " "
-            if fonte.size(teste_linha)[0] <= largura_caixa - 2 * margem:
-                linha_atual = teste_linha
+            teste = linha_atual + palavra + " "
+            if fonte.size(teste)[0] <= largura_caixa - 2 * margem:
+                linha_atual = teste
             else:
                 linhas.append(linha_atual.strip())
                 linha_atual = palavra + " "
         linhas.append(linha_atual.strip())
 
-        # Recalcula a altura da caixa com base no número de linhas
         altura_caixa = max(altura_caixa, margem * 2 + len(linhas) * fonte.get_height())
-
-        # Cria a superfície da caixa
         caixa = pygame.Surface((largura_caixa, altura_caixa))
-        caixa.fill((255, 255, 255))  # Fundo branco
+        caixa.fill((255, 255, 255))
 
-        # Renderiza cada linha e posiciona dentro da caixa
         y_offset = margem
         for linha in linhas:
-            texto_renderizado = fonte.render(linha, True, (0, 0, 255))  # Azul
-            texto_rect = texto_renderizado.get_rect(midtop=(largura_caixa // 2, y_offset))
-            caixa.blit(texto_renderizado, texto_rect)
+            txt = fonte.render(linha, True, (0, 0, 255))
+            txt_rect = txt.get_rect(midtop=(largura_caixa // 2, y_offset))
+            caixa.blit(txt, txt_rect)
             y_offset += fonte.get_height()
 
         return caixa
 
     @staticmethod
     def exibir(screen, caixa):
-        """Posiciona a fala automaticamente na parte inferior central da tela"""
         pos_x = screen.get_width() // 2 - caixa.get_width() // 2
         pos_y = 300
         screen.blit(caixa, (pos_x, pos_y))
 
 class BotaoEscolha:
     def __init__(self, texto, posicao, acao):
-        # Tamanho e estilo fixos
         self.largura = 500
         self.altura = 50
-        self.cor_fundo = (255, 255, 255)  # Branco
-        self.cor_borda = (0, 0, 0)        # Preto
-        self.cor_texto = (0, 0, 255)      # Azul
+        self.cor_fundo = (255, 255, 255)
+        self.cor_borda = (0, 0, 0)
+        self.cor_texto = (0, 0, 255)
         self.fonte = pygame.font.SysFont("Comic Sans MS", 24)
         self.texto = texto
         self.acao = acao
 
-        # Cálculo da posição baseado na posição da fala (400, 300)
-        base_y = 365  # Posição base próxima à fala
-        espaco = 60   # Espaçamento entre botões
-        self.x = 150  # Alinhamento horizontal fixo (ajuste conforme necessário)
+        base_y = 365
+        espaco = 60
+        self.x = 150
         self.y = base_y + (posicao * espaco)
         self.rect = pygame.Rect(self.x, self.y, self.largura, self.altura)
 
     def desenhar(self, screen):
-        # Caixa do botão
         pygame.draw.rect(screen, self.cor_fundo, self.rect)
-        pygame.draw.rect(screen, self.cor_borda, self.rect, 2)  # Contorno preto
-
-        # Texto centralizado
-        texto_render = self.fonte.render(self.texto, True, self.cor_texto)
-        texto_rect = texto_render.get_rect(center=self.rect.center)
-        screen.blit(texto_render, texto_rect)
+        pygame.draw.rect(screen, self.cor_borda, self.rect, 2)
+        txt = self.fonte.render(self.texto, True, self.cor_texto)
+        txt_rect = txt.get_rect(center=self.rect.center)
+        screen.blit(txt, txt_rect)
 
     def checar_clique(self, evento):
         if evento.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(evento.pos):
@@ -125,9 +115,9 @@ class BotaoSair:
         self.y = 20
         self.largura = 100
         self.altura = 40
-        self.cor_fundo = (255, 255, 255)  # Branco
-        self.cor_borda = (0, 0, 0)        # Preto
-        self.cor_texto = (0, 0, 0)        # Preto
+        self.cor_fundo = (255, 255, 255)
+        self.cor_borda = (0, 0, 0)
+        self.cor_texto = (0, 0, 0)
         self.fonte = pygame.font.SysFont("Comic Sans MS", 24)
         self.texto = "Sair"
         self.acao = acao
@@ -136,9 +126,9 @@ class BotaoSair:
     def desenhar(self, screen):
         pygame.draw.rect(screen, self.cor_fundo, self.rect)
         pygame.draw.rect(screen, self.cor_borda, self.rect, 2)
-        texto_render = self.fonte.render(self.texto, True, self.cor_texto)
-        texto_rect = texto_render.get_rect(center=self.rect.center)
-        screen.blit(texto_render, texto_rect)
+        txt = self.fonte.render(self.texto, True, self.cor_texto)
+        txt_rect = txt.get_rect(center=self.rect.center)
+        screen.blit(txt, txt_rect)
 
     def checar_clique(self, evento):
         if evento.type == pygame.MOUSEBUTTONUP and self.rect.collidepoint(evento.pos):

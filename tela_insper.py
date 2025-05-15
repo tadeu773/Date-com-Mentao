@@ -1,37 +1,44 @@
 import pygame
 import random
 from os import path
+
 from config import *
 from classes import *
 import narrativas
 import moods
 
+# --- Caminhos absolutos relativos a este script ---
+SCRIPT_DIR     = path.dirname(path.abspath(__file__))
+FUNDOS_DIR     = path.join(SCRIPT_DIR, "Fundos")
+MOODS_DIR      = SCRIPT_DIR  # supondo que carrega_imagem anime relativo ao script
+NARRATIVAS_DIR = SCRIPT_DIR  # narrativas e moods já importados como módulos
+
 def tela_insper(screen):
     clock = pygame.time.Clock()
 
-    # Carrega o fundo
-    background = pygame.image.load(path.join("Fundos", 'insper_inside.jpeg')).convert()
+    # Carrega o fundo usando caminho absoluto
+    background_path = path.join(FUNDOS_DIR, 'insper_inside.jpeg')
+    background = pygame.image.load(background_path).convert()
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
-    # Carrega as imagens dos moods após a tela existir
+    # Carrega as imagens dos moods
     imagens_mood = {
-        "feliz": carrega_imagem('feliz.png'),
-        "surpreso": carrega_imagem('surpreso.png'),
-        "briga": carrega_imagem('briga.png'),
-        "bravo": carrega_imagem('bravo.png'),
-        "bebendo": carrega_imagem('bebendo.png')
+        "feliz":    carrega_imagem(path.join('feliz.png')),
+        "surpreso": carrega_imagem(path.join('surpreso.png')),
+        "briga":    carrega_imagem(path.join('briga.png')),
+        "bravo":    carrega_imagem(path.join('bravo.png')),
+        "bebendo":  carrega_imagem(path.join('bebendo.png'))
     }
 
-    # Começa a narrativa
+    # Inicia a narrativa
     narrativas.criar_cena_inicial()
 
-    # Define estado inicial da tela
-    state = INSPER
+    state   = INSPER
     running = True
 
     def sair_para_mapa():
         nonlocal state, running
-        state = MAPA
+        state   = MAPA
         running = False
 
     botao_sair = BotaoSair(sair_para_mapa)
@@ -41,21 +48,22 @@ def tela_insper(screen):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                state = QUIT
+                state   = QUIT
                 running = False
 
-            # Verifica cliques nos botões da narrativa
+            # Trata cliques nos botões de narrativa
             for botao in narrativas.botoes_atuais:
                 botao.checar_clique(event)
 
-            # Verifica clique no botão sair
+            # Trata clique no botão sair
             botao_sair.checar_clique(event)
 
-        # Atualiza o humor do personagem baseado no estado atual
-        personagem_img = imagens_mood[moods.mood_mentao]
+        # Atualiza imagem do personagem de acordo com o mood atual
+        personagem_img  = imagens_mood[moods.mood_mentao]
+        personagem_img  = pygame.transform.scale(personagem_img, (300, 300))
         personagem_rect = personagem_img.get_rect(center=(WIDTH // 2, 150))
 
-        # Desenha a interface da tela
+        # Desenha tudo
         screen.fill(BLACK)
         screen.blit(background, (0, 0))
         screen.blit(personagem_img, personagem_rect)
@@ -65,7 +73,6 @@ def tela_insper(screen):
 
         for botao in narrativas.botoes_atuais:
             botao.desenhar(screen)
-
         botao_sair.desenhar(screen)
 
         pygame.display.flip()
