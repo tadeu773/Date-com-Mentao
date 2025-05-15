@@ -11,7 +11,8 @@ def criar_cena_inicial():
     fala_mentao = Mentao.fala("Eae viado você ta bem? Tava indo pra aula de Dessoft")
     botoes_atuais = [
         BotaoEscolha("Dessoft o caralho Mentão! Bora comer!", 1, criar_cena_comida),
-        BotaoEscolha("Boa, também to indo lá", 2, criar_cena_conversa)
+        BotaoEscolha("Boa, também to indo lá", 2, criar_cena_conversa),
+        BotaoEscolha("Seloko Mentao, muito dificil dessoft. Voce ta entendendo?", 3, criar_cena_deco)
     ]
 
 def criar_cena_comida():
@@ -29,6 +30,15 @@ def criar_cena_conversa():
     fala_mentao = Mentao.fala("Demoro! Te encontro lá")
     botoes_atuais = [
         BotaoEscolha("Espera...", 1, criar_cena_cu)
+    ]
+
+def criar_cena_deco():
+    global fala_mentao, botoes_atuais
+    mudar_mood("surpreso")
+    fala_mentao = Mentao.fala("SERIO!?!? Eu tambem tenho muita dificuldade! Meu amigo Deco é muito bom em Dessoft")
+    botoes_atuais = [
+        BotaoEscolha("Deco? Aquele pastel?", 1, criar_cena_cu),
+        BotaoEscolha("Vamos falar com ele", 2, criar_cena_cu)
     ]
 
 def criar_fim_hamburguer():
