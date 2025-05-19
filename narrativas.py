@@ -1,5 +1,6 @@
 from classes import Mentao, BotaoEscolha
 from moods import *
+from config import *
 
 # Variáveis globais para a narrativa
 fala_mentao = None
@@ -65,3 +66,9 @@ def criar_cena_cu():
     global fala_mentao, botoes_atuais
     fala_mentao = Mentao.fala("Sim eu adoro dar o cu, eu dou o cu 100% do meu tempo, dou sim o cu e vou continuar dando")
     botoes_atuais = []
+
+def criar_cena_pre_jogo_pscina():
+    global fala_mentao, botoes_atuais
+    fala_mentao = Mentao.fala("Irmao, eu duvido voce me vencer!")
+    botoes_atuais = [BotaoEscolha("Continuar", 1, criar_fim_vsf)]
+    state = PSCINA
