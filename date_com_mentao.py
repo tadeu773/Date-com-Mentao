@@ -8,6 +8,7 @@ from mapa import tela_mapa
 from classes import *
 from tela_insper import tela_insper
 from pscina import *
+from pre_jogo_piscina import *
 
 pygame.init()
 pygame.mixer.init()

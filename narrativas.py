@@ -67,8 +67,8 @@ def criar_cena_cu():
     fala_mentao = Mentao.fala("Sim eu adoro dar o cu, eu dou o cu 100% do meu tempo, dou sim o cu e vou continuar dando")
     botoes_atuais = []
 
-def criar_cena_pre_jogo_pscina():
+def criar_cena_pre_jogo_pscina(callback_proxima_fase):
     global fala_mentao, botoes_atuais
     fala_mentao = Mentao.fala("Irmao, eu duvido voce me vencer!")
-    botoes_atuais = [BotaoEscolha("Continuar", 1, criar_fim_vsf)]
-    state = PSCINA
+    botoes_atuais = [BotaoEscolha("Continuar", 1, callback_proxima_fase)]
+    

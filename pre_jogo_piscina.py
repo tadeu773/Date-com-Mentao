@@ -31,15 +31,20 @@ def pre_jogo_piscina(screen):
     }
 
     # Inicia a narrativa
-    narrativas.criar_cena_pre_jogo_pscina()
-
-    state   = PRE_PSCI
-    running = True
-
     def sair_para_mapa():
         nonlocal state, running
         state   = MAPA
         running = False
+
+    def sair_para_psci():
+        nonlocal state, running
+        state   = PSCINA
+        running = False
+
+    narrativas.criar_cena_pre_jogo_pscina(sair_para_psci)
+
+    state   = PRE_PSCI
+    running = True
 
     botao_sair = BotaoSair(sair_para_mapa)
 

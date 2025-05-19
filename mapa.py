@@ -68,7 +68,7 @@ def tela_mapa(screen):
                 running = False
 
             if botao_piscina.foi_clicado(event):
-                state = PSCINA
+                state = PRE_PSCI
                 running = False
 
         # Desenha tudo
