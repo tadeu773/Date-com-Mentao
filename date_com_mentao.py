@@ -27,6 +27,9 @@ while state != QUIT:
         state = tela_insper(tela)
     if state == PSCINA:
         state = tela_pscina(tela)
+    if state == PRE_PSCI:
+        state = pre_jogo_piscina(tela)
+
     
 # ===== Finalização =====
 pygame.quit()  # Função do PyGame que finaliza os recursos utilizados
