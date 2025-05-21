@@ -14,6 +14,14 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
+#PROGRESSO DO JOGADOR
+
+progresso_jogador = {
+    "piscina": False,
+    "madero": False,
+    "jk": False,
+}
+
 # Estados para controle do fluxo da aplicação
 INIT = 0
 MAPA = 1
@@ -21,3 +29,4 @@ QUIT = 2
 INSPER = 3
 PSCINA = 4
 PRE_PSCI = 5
+GAMEOVER = 6
