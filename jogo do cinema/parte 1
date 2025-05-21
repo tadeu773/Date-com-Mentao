@@ -1,0 +1,190 @@
+
+import pygame
+import random
+import sys
+import os
+import time
+
+# Inicializa o Pygame
+pygame.init()
+
+# Carrega sons com verificação
+def carregar_som(caminho):
+    if os.path.exists(caminho):
+        print(f"[OK] Som carregado: {caminho}")
+        return pygame.mixer.Sound(caminho)
+    else:
+        print(f"[AVISO] Som não encontrado: {caminho}")
+        return None
+
+som_vitoria = carregar_som("c:/ Users/lipec/Downloads/Efeito Sonoro Som da Vitória - YouTube.html")
+som_derrota = carregar_som("c:/Users/lipec/Downloads/derrota.wav")
+som_ponto = carregar_som("c:/Users/lipec/Downloads/ponto.wav")
+som_erro = carregar_som("c:/Users/lipec/Downloads/erro.wav")
+
+# Define ícone da janela
+icone = pygame.image.load("c:/Users/lipec/Downloads/79bf0011-904e-4c11-bf05-e2a7614c6031.png")
+pygame.display.set_icon(icone)
+pygame.display.set_caption("Pipoca do Mente")
+
+# Cores
+BRANCO = (255, 255, 255)
+PRETO = (0, 0, 0)
+
+# Tamanho da tela
+LARGURA, ALTURA = 400, 600
+tela = pygame.display.set_mode((LARGURA, ALTURA))
+
+# Fonte
+fonte = pygame.font.SysFont('Arial', 26)
+
+# Função auxiliar para carregar imagem com mensagens de debug
+def carregar_imagem(caminho, tamanho):
+    if os.path.exists(caminho):
+        print(f"[OK] Carregando imagem: {caminho}")
+        imagem = pygame.image.load(caminho).convert_alpha()
+        return pygame.transform.scale(imagem, tamanho)
+    else:
+        print(f"[ERRO] Imagem não encontrada: {caminho}")
+        superficie = pygame.Surface(tamanho)
+        superficie.fill(BRANCO)
+        return superficie
+
+# Carrega imagem de fundo
+fundo = carregar_imagem("c:/Users/lipec/Downloads/fundo_jogo.png", (LARGURA, ALTURA))
+
+# Função para desenhar texto com fundo transparente
+def desenhar_texto(texto, fonte, cor_texto, superficie, x, y):
+    texto_renderizado = fonte.render(texto, True, cor_texto)
+    texto_rect = texto_renderizado.get_rect(topleft=(x, y))
+    caixa = pygame.Surface((texto_rect.width + 10, texto_rect.height + 6), pygame.SRCALPHA)
+    caixa.fill((255, 255, 255, 180))  # Branco com transparência
+    superficie.blit(caixa, (x - 5, y - 3))
+    superficie.blit(texto_renderizado, texto_rect)
+
+# Classe do bloco maior
+class BlocoMaior(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = carregar_imagem("c:/Users/lipec/Downloads/a434cd17-74fe-40f8-aff9-3f2b3f00e2d9-removebg-preview.png", (90, 100))
+        self.rect = self.image.get_rect()
+        self.rect.center = (LARGURA // 2, ALTURA - 30)
+        self.velocidade = 10
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and self.rect.left > 0:
+            self.rect.x -= self.velocidade
+        if keys[pygame.K_RIGHT] and self.rect.right < LARGURA:
+            self.rect.x += self.velocidade
+
+# Classe dos blocos menores
+class BlocoMenor(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = carregar_imagem("c:/Users/lipec/Downloads/096c776a-c67a-4308-9a49-7a399c80a897-removebg-preview (1).png", (25, 25))
+        self.rect = self.image.get_rect()
+        self.resetar()
+
+    def resetar(self):
+        self.rect.x = random.randint(0, LARGURA - self.rect.width)
+        self.rect.y = random.randint(-100, -40)
+        self.velocidade = random.randint(3, 10)
+
+    def update(self):
+        self.rect.y += self.velocidade
+
+# Função principal
+def jogo():
+    todos_sprites = pygame.sprite.Group()
+    blocos_menores = pygame.sprite.Group()
+
+    bloco_maior = BlocoMaior()
+    todos_sprites.add(bloco_maior)
+
+    blocos_coletados = 0
+    blocos_perdidos = 0
+    duracao_jogo = 90
+    tempo_inicial = time.time()
+    mensagem_final = ""
+
+    clock = pygame.time.Clock()
+    rodando = True
+
+    while rodando:
+        tempo_decorrido = time.time() - tempo_inicial
+        tempo_restante = max(0, int(duracao_jogo - tempo_decorrido))
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                rodando = False
+
+        if random.random() < 0.02:
+            bloco_menor = BlocoMenor()
+            todos_sprites.add(bloco_menor)
+            blocos_menores.add(bloco_menor)
+
+        for bloco_menor in list(blocos_menores):
+            bloco_menor.update()
+            if bloco_menor.rect.top > ALTURA:
+                bloco_menor.kill()
+                blocos_perdidos += 1
+                if som_erro:
+                    som_erro.play()
+                if os.path.exists("c:/Users/lipec/Downloads/perdeu_ponto.wav"):
+                    pygame.mixer.Sound("c:/Users/lipec/Downloads/perdeu_ponto.wav").play()
+            elif bloco_maior.rect.colliderect(bloco_menor.rect):
+                bloco_menor.kill()
+                blocos_coletados += 1
+                if som_ponto:
+                    som_ponto.play()
+                if os.path.exists("c:/Users/lipec/Downloads/ganhou_ponto.wav"):
+                    pygame.mixer.Sound("c:/Users/lipec/Downloads/ganhou_ponto.wav").play()
+
+        bloco_maior.update()
+
+        if blocos_coletados >= 50:
+            mensagem_final = "Você venceu!"
+            if som_vitoria:
+                som_vitoria.play()
+            rodando = False
+        elif blocos_perdidos >= 10:
+            mensagem_final = "Você perdeu!"
+            if som_derrota:
+                som_derrota.play()
+            rodando = False
+        elif tempo_restante <= 0:
+            mensagem_final = "Tempo esgotado!"
+            if som_derrota:
+                som_derrota.play()
+            rodando = False
+
+        tela.blit(fundo, (0, 0))
+        todos_sprites.draw(tela)
+        desenhar_texto(f'Coletados: {blocos_coletados}', fonte, PRETO, tela, 10, 10)
+        desenhar_texto(f'Perdidos: {blocos_perdidos}', fonte, PRETO, tela, 10, 50)
+        desenhar_texto(f'Tempo: {tempo_restante}s', fonte, PRETO, tela, 10, 90)
+        pygame.display.flip()
+        clock.tick(60)
+
+    # Mostra imagem de fim de jogo
+    if mensagem_final == "Você venceu!":
+        imagem_final = carregar_imagem("c:/Users/lipec/Downloads/7e5d7f14-0886-44df-865b-bf50c45da68f (1).png", (LARGURA, ALTURA))
+    else:
+        imagem_final = carregar_imagem("c:/Users/lipec/Downloads/d6828eb8-252c-4128-b0a0-ee31bcd685d6.png", (LARGURA, ALTURA))
+
+    tela.blit(fundo, (0, 0))
+    tela.blit(imagem_final, ((0, 0)))
+    texto_renderizado = fonte.render(mensagem_final, True, PRETO)
+    texto_rect = texto_renderizado.get_rect(center=(-50, -50))
+    caixa_final = pygame.Surface((texto_rect.width + 20, texto_rect.height + 10), pygame.SRCALPHA)
+    caixa_final.fill((255, 255, 255, 180))
+    tela.blit(caixa_final, (texto_rect.x - 10, texto_rect.y - 5))
+    tela.blit(texto_renderizado, texto_rect)
+    pygame.display.flip()
+    pygame.time.delay(3000)
+    pygame.quit()
+    sys.exit()
+
+if __name__ == "__main__":
+    jogo()
