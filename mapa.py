@@ -67,8 +67,8 @@ def tela_mapa(screen):
                 state = QUIT
                 running = False
 
-            if botao_jk.foi_clicado(event) and progresso_jogador["jk"]:
-                state = QUIT
+            if botao_jk.foi_clicado(event):
+                state = JK
                 running = False
 
         # Desenha tudo

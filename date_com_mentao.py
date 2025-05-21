@@ -9,6 +9,7 @@ from classes import *
 from tela_insper import tela_insper
 from pscina import *
 from pre_jogo_piscina import *
+from Jogo_JK import *
 
 pygame.init()
 pygame.mixer.init()
@@ -31,7 +32,7 @@ while state != QUIT:
     if state == PRE_PSCI:
         state = pre_jogo_piscina(tela)
     if state == JK:
-        state = tela
+        state = tela_pipoca(tela)
 
     
 # ===== Finalização =====

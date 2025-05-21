@@ -1,5 +1,10 @@
 import pygame
 from os import path
+import random
+import time
+import os
+from config import *
+
 
 # --- Caminhos absolutos relativos a este script ---
 SCRIPT_DIR    = path.dirname(path.abspath(__file__))
@@ -145,3 +150,64 @@ class BotaoSair:
     def checar_clique(self, evento):
         if evento.type == pygame.MOUSEBUTTONUP and self.rect.collidepoint(evento.pos):
             self.acao()
+
+# Diretórios e constantes
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+IMAGENS_PIPOCA_DIR = os.path.join(SCRIPT_DIR, "imagens pipoca")
+
+BRANCO = (255, 255, 255)
+PRETO = (0, 0, 0)
+
+# Função para carregar imagem
+def carregar_imagem(caminho, tamanho):
+    if os.path.exists(caminho):
+        imagem = pygame.image.load(caminho).convert_alpha()
+        return pygame.transform.scale(imagem, tamanho)
+    else:
+        print(f"[ERRO] Imagem não encontrada: {caminho}")
+        superficie = pygame.Surface(tamanho)
+        superficie.fill(BRANCO)
+        return superficie
+
+# Função para desenhar texto com fundo transparente
+def desenhar_texto(texto, fonte, cor_texto, superficie, x, y):
+    texto_renderizado = fonte.render(texto, True, cor_texto)
+    texto_rect = texto_renderizado.get_rect(topleft=(x, y))
+    caixa = pygame.Surface((texto_rect.width + 10, texto_rect.height + 6), pygame.SRCALPHA)
+    caixa.fill((255, 255, 255, 180))  # Branco com transparência
+    superficie.blit(caixa, (x - 5, y - 3))
+    superficie.blit(texto_renderizado, texto_rect)
+
+# Classe do balde de pipoca
+class BlocoMaior(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        caminho_balde = os.path.join(IMAGENS_PIPOCA_DIR, "balde.png")
+        self.image = carregar_imagem(caminho_balde, (90, 100))
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH // 2, HEIGHT - 30)
+        self.velocidade = 10
+
+    def update(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] and self.rect.left > 0:
+            self.rect.x -= self.velocidade
+        if keys[pygame.K_RIGHT] and self.rect.right < WIDTH:
+            self.rect.x += self.velocidade
+
+# Classe das pipocas
+class BlocoMenor(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        caminho_pipoca = os.path.join(IMAGENS_PIPOCA_DIR, "pipoca.png")
+        self.image = carregar_imagem(caminho_pipoca, (25, 25))
+        self.rect = self.image.get_rect()
+        self.resetar()
+
+    def resetar(self):
+        self.rect.x = random.randint(0, WIDTH - self.rect.width)
+        self.rect.y = random.randint(-100, -40)
+        self.velocidade = random.randint(3, 10)
+
+    def update(self):
+        self.rect.y += self.velocidade
