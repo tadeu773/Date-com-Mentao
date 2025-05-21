@@ -50,6 +50,7 @@ def init_screen(screen):
 
             elif event.type == pygame.MOUSEBUTTONUP:
                 if button_rect.collidepoint(event.pos):
+                    print("clique no botao")
                     state   = MAPA
                     running = False
 

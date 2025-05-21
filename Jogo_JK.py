@@ -49,7 +49,7 @@ def tela_pipoca(screen):
 
         jogador.update()
 
-        if coletados >= 50:
+        if coletados >= 20:
             state = MAPA
             running = False
         elif perdidos >= 10 or tempo_restante <= 0:

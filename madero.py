@@ -3,9 +3,11 @@ import pygame
 import random
 import sys
 import os
+from config import *
 
-# Inicialização
-pygame.init()
+
+state = MADERO  # inicia no jogo
+
 
 # Dimensões da tela
 largura = 400
@@ -75,15 +77,15 @@ relogio = pygame.time.Clock()
 jogo_rodando = True
 tempo_inicial = 0
 vitoria = None
+derrota=True
 
-while jogo_rodando:
+def jogo_madero(tela):
     tela.fill(PRETO)
     tempo_atual = pygame.time.get_ticks()
 
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+            state   = QUIT
 
     if preparando:
         tempo_restante = max(0, (tempo_pre_jogo - (tempo_atual - inicio_preparacao)) // 1000 + 1)
@@ -101,14 +103,16 @@ while jogo_rodando:
             preparando = False
             tempo_inicial = pygame.time.get_ticks()
         relogio.tick(60)
-        continue
+        
 
     tempo_passado = tempo_atual - tempo_inicial
     if tempo_passado >= tempo_total:
         vitoria = True
-        if som_vitoria: som_vitoria.play()
-        jogo_rodando = False
-        continue
+        state=MAPA
+        if som_vitoria: 
+            som_vitoria.play()
+
+        
 
     teclas = pygame.key.get_pressed()
     if teclas[pygame.K_LEFT] and jogador_coluna > 0:
@@ -134,9 +138,13 @@ while jogo_rodando:
     colidiu = any(int(bloco['coluna']) == int(jogador_coluna) and bloco['y'] + bloco_altura > jogador_y for bloco in blocos)
     if colidiu:
         vitoria = False
+        derrota = True
         if som_colisao: som_colisao.play()
-        if som_gameover: som_gameover.play()
-        jogo_rodando = False
+        if som_gameover: 
+            som_gameover.play()
+            vitoria=False
+            derrota=True
+        
 
     for bloco in blocos:
         if 0 <= bloco['coluna'] < colunas:
@@ -160,26 +168,10 @@ while jogo_rodando:
     pygame.display.flip()
     relogio.tick(60)
 
-# Tela final
-while True:
-    tela.fill(PRETO)
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-    if vitoria:
-        if img_vitoria:
-            tela.blit(pygame.transform.scale(img_vitoria, (largura, altura)), (0, 0))
-        else:
-            texto = fonte.render("Você venceu!", True, BRANCO)
-            tela.blit(texto, (largura//2 - texto.get_width()//2, altura//2))
-    else:
+    if derrota:
         if img_game_over:
             tela.blit(pygame.transform.scale(img_game_over, (largura, altura)), (0, 0))
         else:
             texto = fonte.render("Game Over", True, BRANCO)
             tela.blit(texto, (largura//2 - texto.get_width()//2, altura//2))
-
-    pygame.display.flip()
-    relogio.tick(60)
+    return state
