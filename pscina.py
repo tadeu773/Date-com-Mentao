@@ -1,96 +1,144 @@
+# pscina.py
+
 import pygame
 import random
-import sys
 from os import path
-from config import *
+from config import WIDTH, HEIGHT, FPS, PSCINA, MAPA, QUIT
 
 # Caminhos
 SCRIPT_DIR    = path.dirname(path.abspath(__file__))
 NADADORES_DIR = path.join(SCRIPT_DIR, "Fotos Nadador")
+FUNDOS_DIR    = path.join(SCRIPT_DIR, "Fundos")
+FONTS_DIR     = path.join(SCRIPT_DIR, "assets", "fonts")  # ajuste conforme sua estrutura
+
+# Cores
+VERDE = (200, 0, 0)
+PRETO = (0, 0, 0)
+
+# Função de renderização de texto com contorno
+def render_text_outline(surface, text, font, pos, fg, outline, width=2):
+    base = font.render(text, True, fg)
+    x, y = pos
+    for dx in range(-width, width+1):
+        for dy in range(-width, width+1):
+            if dx or dy:
+                surf = font.render(text, True, outline)
+                surface.blit(surf, (x+dx, y+dy))
+    surface.blit(base, (x, y))
+
+
+def load_font(file_name, size):
+    """
+    Tenta carregar uma fonte TTF do diretório assets/fonts;
+    se falhar, usa fonte do sistema.
+    """
+    pygame.font.init()
+    font_path = path.join(FONTS_DIR, file_name)
+    if path.isfile(font_path):
+        try:
+            return pygame.font.Font(font_path, size)
+        except Exception:
+            pass
+    # fallback para SysFont
+    return pygame.font.SysFont("arial", size)
+
 
 def tela_pscina(screen):
     clock = pygame.time.Clock()
-    fonte = pygame.font.SysFont("arial", 32)
-    VERDE = (0, 200, 0)
-    fundo = pygame.image.load(path.join(SCRIPT_DIR, "Fundos", "piscina.jpg")).convert()
-    fundo = pygame.transform.scale(fundo, (WIDTH, HEIGHT))
+
+    # Carrega fontes: big para contagem, small para textos
+    font_big   = load_font("gamer_font.ttf", 80)
+    font_small = load_font("gamer_font.ttf", 32)
+
+    # Carrega e escala o fundo
+    bg = pygame.image.load(path.join(FUNDOS_DIR, "piscina.jpg")).convert()
+    bg = pygame.transform.scale(bg, (WIDTH, HEIGHT))
 
     # Carrega sprites do jogador e bot
-    sprites_jogador = [
-        pygame.image.load(path.join(NADADORES_DIR, "nadador1.png")).convert_alpha(),
-        pygame.image.load(path.join(NADADORES_DIR, "nadador2.png")).convert_alpha()
-    ]
-    sprites_bot = [
-        pygame.image.load(path.join(NADADORES_DIR, "bot1.png")).convert_alpha(),
-        pygame.image.load(path.join(NADADORES_DIR, "bot2.png")).convert_alpha()
-    ]
+    sprites_j = []
+    sprites_b = []
+    for name in ("nadador1.png", "nadador2.png"):
+        img = pygame.image.load(path.join(NADADORES_DIR, name)).convert_alpha()
+        sprites_j.append(pygame.transform.scale(img, (80, 40)))
+    for name in ("bot1.png", "bot2.png"):
+        img = pygame.image.load(path.join(NADADORES_DIR, name)).convert_alpha()
+        sprites_b.append(pygame.transform.scale(img, (80, 40)))
 
-    TAMANHO_NAD = (80, 40)
-    for i in range(len(sprites_jogador)):
-        sprites_jogador[i] = pygame.transform.scale(sprites_jogador[i], TAMANHO_NAD)
-        sprites_bot[i] = pygame.transform.scale(sprites_bot[i], TAMANHO_NAD)
+    # Posições e variáveis
+    x_j, y_j = 50, 200
+    x_b, y_b = 50, 300
+    goal_x    = WIDTH - 120
+    anim_j    = 0
+    anim_b    = 0
+    timer_b   = 0
+    INTERVAL  = 10
+    running   = True
+    vencedor  = None
 
-    jogador_x, bot_x = 50, 50
-    y_jogador, y_bot = 200, 300
-    distancia_vitoria = 700
-    jogo_ativo = True
-    vencedor = ""
-    state = PSCINA
-
-    sprite_index_jogador = 0
-    sprite_index_bot = 0
-    anim_timer_bot = 0
-    ANIM_INTERVAL_BOT = 10
-
-    # Contagem regressiva
-    for contagem in range(3, 0, -1):
-        screen.blit(fundo, (0, 0))
-        texto_info = fonte.render("A competição irá começar em:", True, VERDE)
-        texto_contagem = fonte.render(str(contagem), True, VERDE)
-        texto_instrucao = fonte.render("Aperte a barra de espaço para nadar", True, VERDE)
-
-        screen.blit(texto_info, (WIDTH // 2 - texto_info.get_width() // 2, HEIGHT // 2 - 90))
-        screen.blit(texto_contagem, (WIDTH // 2 - texto_contagem.get_width() // 2, HEIGHT // 2 - 30))
-        screen.blit(texto_instrucao, (WIDTH // 2 - texto_instrucao.get_width() // 2, HEIGHT // 2 + 30))
+    # 1) Contagem regressiva
+    for cnt in ("3", "2", "1"):
+        screen.blit(bg, (0, 0))
+        render_text_outline(
+            screen, "COMPETIÇÃO", font_small,
+            (WIDTH//2 - font_small.size("COMPETIÇÃO")[0]//2, HEIGHT//2 - 140),
+            VERDE, PRETO, width=3
+        )
+        render_text_outline(
+            screen, cnt, font_big,
+            (WIDTH//2 - font_big.size(cnt)[0]//2, HEIGHT//2 - font_big.size(cnt)[1]//2),
+            VERDE, PRETO, width=4
+        )
+        render_text_outline(
+            screen, "Pressione Espaço para nadar", font_small,
+            (WIDTH//2 - font_small.size("Pressione Espaço para nadar")[0]//2, HEIGHT//2 + 80),
+            VERDE, PRETO, width=2
+        )
         pygame.display.flip()
-        pygame.time.delay(1000)
+        pygame.time.delay(800)
 
+    # 2) Loop principal
     while True:
         clock.tick(FPS)
-        screen.blit(fundo, (0, 0))
+        screen.blit(bg, (0, 0))
 
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
+        for ev in pygame.event.get():
+            if ev.type == pygame.QUIT:
                 return QUIT
+            # Espaço para nadar
+            if running and ev.type == pygame.KEYDOWN and ev.key == pygame.K_SPACE:
+                x_j += 20
+                anim_j = (anim_j + 1) % len(sprites_j)
 
-            # Troca o sprite do jogador somente quando a tecla espaço é pressionada
-            if jogo_ativo and evento.type == pygame.KEYDOWN and evento.key == pygame.K_SPACE:
-                jogador_x += 21
-                sprite_index_jogador = (sprite_index_jogador + 1) % len(sprites_jogador)
+        # Bot se move e anima
+        if running:
+            x_b += 2
+            timer_b += 1
+            if timer_b >= INTERVAL:
+                anim_b = (anim_b + 1) % len(sprites_b)
+                timer_b = 0
 
-        # Atualiza o sprite do bot automaticamente
-        if jogo_ativo:
-            bot_x += random.randint(1, 3)
-            anim_timer_bot += 1
-            if anim_timer_bot >= ANIM_INTERVAL_BOT:
-                sprite_index_bot = (sprite_index_bot + 1) % len(sprites_bot)
-                anim_timer_bot = 0
-
-            if jogador_x >= distancia_vitoria:
+            # Verifica vitória
+            if x_j >= goal_x:
                 vencedor = "Você venceu!"
-                jogo_ativo = False
-            elif bot_x >= distancia_vitoria:
-                vencedor = "O Mentão venceu!"
-                jogo_ativo = False
+                running = False
+            elif x_b >= goal_x:
+                vencedor = "Mentão venceu!"
+                running = False
 
-            if not jogo_ativo:
-                texto = fonte.render(vencedor, True, VERDE)
-                screen.blit(texto, (WIDTH // 2 - texto.get_width() // 2, 20))
-                pygame.display.flip()
-                pygame.time.delay(2000)
-                return MAPA
+        # Exibe vencedor
+        if vencedor:
+            render_text_outline(
+                screen, vencedor, font_small,
+                (WIDTH//2 - font_small.size(vencedor)[0]//2, 20),
+                VERDE, PRETO, width=3
+            )
 
-        screen.blit(sprites_jogador[sprite_index_jogador], (jogador_x, y_jogador))
-        screen.blit(sprites_bot[sprite_index_bot], (bot_x, y_bot))
+        # Desenha sprites
+        screen.blit(sprites_j[anim_j], (x_j, y_j))
+        screen.blit(sprites_b[anim_b], (x_b, y_b))
 
         pygame.display.flip()
+
+        if vencedor:
+            pygame.time.delay(2000)
+            return MAPA

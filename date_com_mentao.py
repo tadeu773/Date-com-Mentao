@@ -8,6 +8,7 @@ from mapa import tela_mapa
 from classes import *
 from tela_insper import tela_insper
 from pscina import *
+from pre_jogo_piscina import *
 
 pygame.init()
 pygame.mixer.init()
@@ -27,6 +28,9 @@ while state != QUIT:
         state = tela_insper(tela)
     if state == PSCINA:
         state = tela_pscina(tela)
+    if state == PRE_PSCI:
+        state = pre_jogo_piscina(tela)
+
     
 # ===== Finalização =====
 pygame.quit()  # Função do PyGame que finaliza os recursos utilizados

@@ -64,7 +64,9 @@ class Mentao:
 
         altura_caixa = max(altura_caixa, margem * 2 + len(linhas) * fonte.get_height())
         caixa = pygame.Surface((largura_caixa, altura_caixa))
-        caixa.fill((255, 255, 255))
+        caixa.fill((255, 255, 255))  
+
+        pygame.draw.rect(caixa, (0, 0, 0), caixa.get_rect(), 3)
 
         y_offset = margem
         for linha in linhas:
@@ -83,27 +85,37 @@ class Mentao:
 
 class BotaoEscolha:
     def __init__(self, texto, posicao, acao):
-        self.largura = 500
+        self.largura = 650
         self.altura = 50
-        self.cor_fundo = (255, 255, 255)
+        self.cor_fundo = (255, 192, 203)  # rosa claro
         self.cor_borda = (0, 0, 0)
-        self.cor_texto = (0, 0, 255)
+        self.cor_texto = (255, 255, 255)  # branco
         self.fonte = pygame.font.SysFont("Comic Sans MS", 24)
         self.texto = texto
         self.acao = acao
 
         base_y = 365
         espaco = 60
-        self.x = 150
+        self.x = (800 - self.largura) // 2  # Centraliza na tela
         self.y = base_y + (posicao * espaco)
         self.rect = pygame.Rect(self.x, self.y, self.largura, self.altura)
 
     def desenhar(self, screen):
         pygame.draw.rect(screen, self.cor_fundo, self.rect)
         pygame.draw.rect(screen, self.cor_borda, self.rect, 2)
-        txt = self.fonte.render(self.texto, True, self.cor_texto)
-        txt_rect = txt.get_rect(center=self.rect.center)
-        screen.blit(txt, txt_rect)
+
+        # Renderiza o texto com contorno preto
+        txt_surface = self.fonte.render(self.texto, True, self.cor_texto)
+        txt_rect = txt_surface.get_rect(center=self.rect.center)
+
+        # Desenha contorno preto
+        for dx in [-1, 1]:
+            for dy in [-1, 1]:
+                borda = self.fonte.render(self.texto, True, (0, 0, 0))
+                screen.blit(borda, (txt_rect.x + dx, txt_rect.y + dy))
+
+        # Texto principal (branco)
+        screen.blit(txt_surface, txt_rect)
 
     def checar_clique(self, evento):
         if evento.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(evento.pos):

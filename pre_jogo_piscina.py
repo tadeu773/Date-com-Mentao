@@ -13,11 +13,11 @@ FUNDOS_DIR     = path.join(SCRIPT_DIR, "Fundos")
 MOODS_DIR      = SCRIPT_DIR  # supondo que carrega_imagem anime relativo ao script
 NARRATIVAS_DIR = SCRIPT_DIR  # narrativas e moods já importados como módulos
 
-def tela_insper(screen):
+def pre_jogo_piscina(screen):
     clock = pygame.time.Clock()
 
     # Carrega o fundo usando caminho absoluto
-    background_path = path.join(FUNDOS_DIR, 'insper_inside.jpeg')
+    background_path = path.join(FUNDOS_DIR, 'piscina ubatuba.jpg')
     background = pygame.image.load(background_path).convert()
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 
@@ -31,15 +31,20 @@ def tela_insper(screen):
     }
 
     # Inicia a narrativa
-    narrativas.iniciar_narrativa_insper()
-
-    state   = INSPER
-    running = True
-
     def sair_para_mapa():
         nonlocal state, running
         state   = MAPA
         running = False
+
+    def sair_para_psci():
+        nonlocal state, running
+        state   = PSCINA
+        running = False
+
+    narrativas.criar_cena_pre_jogo_pscina(sair_para_psci)
+
+    state   = PRE_PSCI
+    running = True
 
     botao_sair = BotaoSair(sair_para_mapa)
 
