@@ -30,6 +30,8 @@ while state != QUIT:
         state = tela_pscina(tela)
     if state == PRE_PSCI:
         state = pre_jogo_piscina(tela)
+    if state == JK:
+        state = tela
 
     
 # ===== Finalização =====
