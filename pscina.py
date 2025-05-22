@@ -74,6 +74,7 @@ def tela_pscina(screen):
     INTERVAL  = 10
     running   = True
     vencedor  = None
+    libera_movimento = False  # novo controle
 
     # 1) Contagem regressiva
     for cnt in ("3", "2", "1"):
@@ -96,6 +97,10 @@ def tela_pscina(screen):
         pygame.display.flip()
         pygame.time.delay(800)
 
+    # 🔁 Correção: limpa eventos antes de liberar entrada
+    pygame.event.clear()
+    libera_movimento = True
+
     # 2) Loop principal
     while True:
         clock.tick(FPS)
@@ -104,8 +109,8 @@ def tela_pscina(screen):
         for ev in pygame.event.get():
             if ev.type == pygame.QUIT:
                 return QUIT
-            # Espaço para nadar
-            if running and ev.type == pygame.KEYDOWN and ev.key == pygame.K_SPACE:
+            # Espaço para nadar (só se permitido)
+            if running and libera_movimento and ev.type == pygame.KEYDOWN and ev.key == pygame.K_SPACE:
                 x_j += 20
                 anim_j = (anim_j + 1) % len(sprites_j)
 
@@ -142,3 +147,5 @@ def tela_pscina(screen):
         if vencedor:
             pygame.time.delay(2000)
             return MAPA
+
+
