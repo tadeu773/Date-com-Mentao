@@ -59,26 +59,26 @@ def tela_mapa(screen):
                 state = INSPER
                 running = False
 
-            if botao_jk.foi_clicado(event):
-                state = QUIT
-                running = False
-
-            if botao_madero.foi_clicado(event):
-                state = QUIT
-                running = False
-
-            if botao_piscina.foi_clicado(event):
+            if botao_piscina.foi_clicado(event) and progresso_jogador["piscina"]:
                 state = PRE_PSCI
+                running = False
+
+            if botao_madero.foi_clicado(event) and progresso_jogador["madero"]:
+                state = MADERO
+                running = False
+
+            if botao_jk.foi_clicado(event):
+                state = JK
                 running = False
 
         # Desenha tudo
         screen.fill(BLACK)
-        screen.blit(mapa, mapa_rect)
 
         botao_insper.desenhar(screen)
         botao_jk.desenhar(screen)
         botao_madero.desenhar(screen)
         botao_piscina.desenhar(screen)
+        screen.blit(mapa, mapa_rect)
 
         pygame.display.flip()
 

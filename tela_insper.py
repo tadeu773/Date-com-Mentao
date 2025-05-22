@@ -31,7 +31,7 @@ def tela_insper(screen):
     }
 
     # Inicia a narrativa
-    narrativas.criar_cena_inicial()
+    narrativas.iniciar_narrativa_insper()
 
     state   = INSPER
     running = True

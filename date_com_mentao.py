@@ -1,6 +1,7 @@
 # ===== Inicialização =====
 # ----- Importa e inicia pacotes
 import pygame
+pygame.init()
 import random
 from config import *
 from init_screen import init_screen
@@ -9,8 +10,10 @@ from classes import *
 from tela_insper import tela_insper
 from pscina import *
 from pre_jogo_piscina import *
+from Jogo_JK import *
+from madero import *
 
-pygame.init()
+
 pygame.mixer.init()
 
 # ----- Gera tela principal
@@ -30,6 +33,10 @@ while state != QUIT:
         state = tela_pscina(tela)
     if state == PRE_PSCI:
         state = pre_jogo_piscina(tela)
+    if state == JK:
+        state = tela_pipoca(tela)
+    if state == MADERO:
+        state = jogo_madero(tela)
 
     
 # ===== Finalização =====
