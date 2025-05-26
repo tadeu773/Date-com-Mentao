@@ -1,12 +1,10 @@
 import pygame
 import random
 from os import path
-
 from config import *
 from classes import *
 import narrativas
 import moods
-from pscina import *
 
 # --- Caminhos absolutos relativos a este script ---
 SCRIPT_DIR     = path.dirname(path.abspath(__file__))

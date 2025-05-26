@@ -13,7 +13,7 @@ from pre_jogo_piscina import *
 from Jogo_JK import *
 from madero import *
 from gameover import *
-from pre
+from pre_jk import *
 
 
 pygame.mixer.init()
