@@ -59,7 +59,7 @@ def tela_mapa(screen):
                 state = INSPER
                 running = False
 
-            if botao_piscina.foi_clicado(event):
+            if botao_piscina.foi_clicado(event) and progresso_jogador["piscina"]:
                 state = PRE_PSCI
                 running = False
 
@@ -67,8 +67,8 @@ def tela_mapa(screen):
                 state = MADERO
                 running = False
 
-            if botao_jk.foi_clicado(event):
-                state = JK
+            if botao_jk.foi_clicado(event) and progresso_jogador["jk"]:
+                state = PRE_JK
                 running = False
 
         # Desenha tudo

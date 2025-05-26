@@ -21,6 +21,7 @@ progresso_jogador = {
     "madero": False,
     "jk": False,
     "piscina completa": False,
+    "jk completo": False
 }
 
 # Estados para controle do fluxo da aplicação
@@ -33,3 +34,4 @@ PRE_PSCI = 5
 GAMEOVER = 6
 JK = 7
 MADERO = 8
+PRE_JK = 9

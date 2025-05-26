@@ -11,11 +11,11 @@ def iniciar_narrativa_insper():
     if not progresso_jogador["piscina"]:
         criar_cena_pre_piscina()
     elif not progresso_jogador["madero"]:
-        criar_cena_inicial()
+        criar_cena_inicial_jk()
     elif not progresso_jogador["jk"]:
-        criar_cena_cu()
+        criar_fim_vsf()
     else:
-        criar_cena_cu()
+        criar_fim_vsf()
 #PRE PISCINA
 #CAMINHO CORRETO
 def criar_cena_pre_piscina():
@@ -110,48 +110,111 @@ def criar_cena_fora():
     botoes_atuais = [
         BotaoEscolha("GAME OVER", 2, criar_cena_nadar),
     ]
-
-def criar_cena_inicial():
+#FIM CAMINHOS ALTERNATIVOS PRE PISCINA
+#INICIO CAMINHOS JK
+def criar_cena_inicial_jk():
     global fala_mentao, botoes_atuais
     mudar_mood("feliz")
-    fala_mentao = Mentao.fala("Eae viado você ta bem? Tava indo pra aula de Dessoft")
+    fala_mentao = Mentao.fala("Oii, saudades de você, ainda estou impressionado sobre o jeito como você nada!")
     botoes_atuais = [
-        BotaoEscolha("Dessoft o caralho Mentão! Bora comer!", 1, criar_cena_comida),
-        BotaoEscolha("Boa, também to indo lá", 2, criar_cena_conversa),
-        BotaoEscolha("Seloko Mentao, muito dificil dessoft. Voce ta entendendo?", 3, criar_cena_deco)
+        BotaoEscolha("Você também nadou bem!", 1, criar_cena_elogio),
+        BotaoEscolha("Você é lerdão", 2, criar_cena_lerdao),
+        BotaoEscolha("Valeu! Eai vai fazer oque agora?", 3, criar_cena_deco)
     ]
 
-def criar_cena_comida():
+def criar_cena_elogio():
     global fala_mentao, botoes_atuais
     mudar_mood("surpreso")
-    fala_mentao = Mentao.fala("Hmmmm, se bem que me deu fome de Madeiro, vamo?")
+    fala_mentao = Mentao.fala("Obrigado, você é muito gente boa!")
     botoes_atuais = [
-        BotaoEscolha("Pra já caralho", 1, criar_fim_hamburguer),
-        BotaoEscolha("Na real to afim de um pastel", 2, criar_fim_pastel)
+        BotaoEscolha("Você também! *pintou um clima*", 1, criar_cena_clima),
+        BotaoEscolha("Valeu", 2, criar_cena_grosso)
     ]
 
-def criar_cena_conversa():
+def criar_cena_clima():
     global fala_mentao, botoes_atuais
     mudar_mood("bebendo")
-    fala_mentao = Mentao.fala("Demoro! Te encontro lá")
+    fala_mentao = Mentao.fala("Oque voce acha da gente ver um filme em?")
     botoes_atuais = [
-        BotaoEscolha("Espera...", 1, criar_cena_cu)
+        BotaoEscolha("So se for no JK", 1, criar_cena_adorojk),
+        BotaoEscolha("Odeio filmes", 2, criar_cena_odeiofilmes),
+        BotaoEscolha("Calma ai garotão! Ta muito emocionado!", 3, criar_cena_emocionado),
+    ]
+
+def criar_cena_adorojk():
+    global fala_mentao, botoes_atuais
+    progresso_jogador["jk"] = True 
+    mudar_mood("feliz")
+    fala_mentao = Mentao.fala("ETA! Eu adoro o JK, vamo marcar 15:00 horas la então!")
+    botoes_atuais = [
+        BotaoEscolha("Feshow", 1, criar_cena_adorojk2),
+    ]
+
+def criar_cena_adorojk2():
+    global fala_mentao, botoes_atuais
+    progresso_jogador["jk"] = True 
+    mudar_mood("feliz")
+    fala_mentao = Mentao.fala("")
+    botoes_atuais = [
+        BotaoEscolha("*JK DESBLOQUEADO*", 1, criar_cena_adorojk2),
+    ]
+
+#CAMINHO CERTO JK CONCLUIDO
+#INICIO CAMINHOS ALTERNATIVOS
+
+def criar_cena_grosso():
+    global fala_mentao, botoes_atuais
+    mudar_mood("briga")
+    fala_mentao = Mentao.fala("Eu não sou gente boa?")
+    botoes_atuais = [
+        BotaoEscolha("Volta aqui Mentão, foi mal!", 1, criar_cena_pedir_desculpa),
+        BotaoEscolha("Não mentão, você é pastel!", 2, criar_fim_pastel)
     ]
 
 def criar_cena_deco():
     global fala_mentao, botoes_atuais
-    mudar_mood("surpreso")
-    fala_mentao = Mentao.fala("SERIO!?!? Eu tambem tenho muita dificuldade! Meu amigo Deco é muito bom em Dessoft")
+    mudar_mood("feliz")
+    fala_mentao = Mentao.fala("Tava pensando em chamar o Deco pra bater um rango... mas se você quiser, cancelo tudo!")
     botoes_atuais = [
-        BotaoEscolha("Deco? Aquele pastel?", 1, criar_cena_cu),
-        BotaoEscolha("Vamos falar com ele", 2, criar_cena_cu)
+        BotaoEscolha("Cancela mesmo, vamos pro JK", 1, criar_cena_adorojk),
+        BotaoEscolha("Deixa quieto, vai lá com o Deco", 2, criar_cena_grosso)
     ]
 
-def criar_fim_hamburguer():
-    mudar_mood("bebendo")
+def criar_cena_pedir_desculpa():
     global fala_mentao, botoes_atuais
-    fala_mentao = Mentao.fala("Boa escolha! Vamos comer então.")
-    botoes_atuais = []
+    mudar_mood("bravo")
+    fala_mentao = Mentao.fala("Tá bom... mas só porque eu sou legal. E não o bozo!")
+    botoes_atuais = [
+        BotaoEscolha("Prometo! Bora voltar ao assunto", 1, criar_cena_elogio),
+        BotaoEscolha("Mentão emocionou", 2, criar_cena_emocionado)
+    ]
+
+def criar_cena_lerdao():
+    global fala_mentao, botoes_atuais
+    mudar_mood("surpreso")
+    fala_mentao = Mentao.fala("Lerdão? Eu deixei você me vencer!")
+    botoes_atuais = [
+        BotaoEscolha("kkkkk beleza beleza", 1, criar_cena_clima),
+        BotaoEscolha("Você não sabe mentir! Para com isso vai!", 2, criar_cena_grosso)
+    ]
+
+def criar_cena_emocionado():
+    global fala_mentao, botoes_atuais
+    mudar_mood("bebendo")
+    fala_mentao = Mentao.fala("Tá bom, tá bom! Fui intenso demais? É que você me deixa assim.")
+    botoes_atuais = [
+        BotaoEscolha("Hahaha... ok, vamo pro JK", 1, criar_cena_adorojk),
+        BotaoEscolha("É melhor cada um ir pro seu lado, não me misturo com pastel", 2, criar_fim_vsf)
+    ]
+
+def criar_cena_odeiofilmes():
+    global fala_mentao, botoes_atuais
+    mudar_mood("bravo")
+    fala_mentao = Mentao.fala("Odeia? Mas eu gosto, eu gosto de cinema")
+    botoes_atuais = [
+        BotaoEscolha("Brincadeira! Eu topo JK sim!", 1, criar_cena_adorojk),
+        BotaoEscolha("Já viu o filme do bozo?", 2, criar_fim_vsf)
+    ]
 
 def criar_fim_pastel():
     global fala_mentao, botoes_atuais
@@ -165,11 +228,6 @@ def criar_fim_vsf():
     global fala_mentao, botoes_atuais
     mudar_mood("bravo")
     fala_mentao = Mentao.fala("E eu sou o Bozo!")
-    botoes_atuais = []
-
-def criar_cena_cu():
-    global fala_mentao, botoes_atuais
-    fala_mentao = Mentao.fala("Sim eu adoro dar o cu, eu dou o cu 100% do meu tempo, dou sim o cu e vou continuar dando")
     botoes_atuais = []
 
 #FALAS PISCINA
@@ -186,4 +244,31 @@ def criar_cena_pos_jogo_pscina(callback_mapa, callback_nado):
         BotaoEscolha("*NOVOS DIALOGOS NO INSPER*", 1, callback_mapa),
         BotaoEscolha("*NADAR CONTRA MENTÃO*", 2, callback_nado)
     ]
+
+#FALAS JK
+def iniciar_cena_pre_jk(callback_proxima_fase):
+    criar_cena_prejk(callback_proxima_fase)
+
+def criar_cena_filme(callback_proxima_fase):
+    global fala_mentao, botoes_atuais
+    fala_mentao = Mentao.fala("Caramba, to adorando esse filme\n*Mentão está vidrado na tela*")
+    mudar_mood("surpreso")
+    botoes_atuais = [
+        BotaoEscolha("Bem legal mesmo...", 1, lambda: iniciar_cena_pre_jk(callback_proxima_fase)),
+        BotaoEscolha("Mano que porra de filme é esse?", 2, lambda: iniciar_cena_pre_jk(callback_proxima_fase)),
+        BotaoEscolha("*Continuar dormindo*", 3, lambda: iniciar_cena_pre_jk(callback_proxima_fase)),
+    ]
+
+def criar_cena_prejk(callback_proxima_fase):
+    global fala_mentao, botoes_atuais
+    fala_mentao = Mentao.fala("ETAAA DEIXEI TODA MINHA PIPOCA CAIR!!!!")
+    botoes_atuais = [BotaoEscolha("*PEGAR AS PIPOCAS DO MENTÃO*", 1, callback_proxima_fase)]
+
+def criar_cena_pos_jogo_jk(callback_mapa, callback_nado):
+    global fala_mentao, botoes_atuais
+    fala_mentao = Mentao.fala("QUE ISSO! Você é tipo aqueles ninjas sabe, que isso\n*Mentão ainda está vidrado na tela*")
+    botoes_atuais = [
+        BotaoEscolha("*NOVOS DIALOGOS NO INSPER*", 1, callback_mapa),
+        BotaoEscolha("*PEGAR AS PIPOCAS DO MENTÃO*", 2, callback_nado)
+        ]
     

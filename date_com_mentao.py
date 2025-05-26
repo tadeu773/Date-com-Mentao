@@ -13,6 +13,7 @@ from pre_jogo_piscina import *
 from Jogo_JK import *
 from madero import *
 from gameover import *
+from pre
 
 
 pygame.mixer.init()
@@ -40,6 +41,8 @@ while state != QUIT:
         state = jogo_madero(tela)
     if state == GAMEOVER:
         state = game_over(tela)
+    if state == PRE_JK:
+        state = pre_jogo_jk(tela)
 
     
 # ===== Finalização =====
