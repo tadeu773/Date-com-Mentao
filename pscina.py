@@ -3,7 +3,7 @@
 import pygame
 import random
 from os import path
-from config import WIDTH, HEIGHT, FPS, PSCINA, MAPA, QUIT
+from config import *
 
 # Caminhos
 SCRIPT_DIR    = path.dirname(path.abspath(__file__))
@@ -28,10 +28,6 @@ def render_text_outline(surface, text, font, pos, fg, outline, width=2):
 
 
 def load_font(file_name, size):
-    """
-    Tenta carregar uma fonte TTF do diretório assets/fonts;
-    se falhar, usa fonte do sistema.
-    """
     pygame.font.init()
     font_path = path.join(FONTS_DIR, file_name)
     if path.isfile(font_path):
@@ -125,9 +121,12 @@ def tela_pscina(screen):
             # Verifica vitória
             if x_j >= goal_x:
                 vencedor = "Você venceu!"
+                state = PRE_PSCI
+                progresso_jogador["piscina completa"] = True
                 running = False
             elif x_b >= goal_x:
                 vencedor = "Mentão venceu!"
+                state = GAMEOVER
                 running = False
 
         # Exibe vencedor
@@ -146,6 +145,6 @@ def tela_pscina(screen):
 
         if vencedor:
             pygame.time.delay(2000)
-            return MAPA
+            return state
 
 

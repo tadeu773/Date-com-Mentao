@@ -20,6 +20,7 @@ progresso_jogador = {
     "piscina": False,
     "madero": False,
     "jk": False,
+    "piscina completa": False,
 }
 
 # Estados para controle do fluxo da aplicação

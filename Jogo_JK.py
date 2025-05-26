@@ -10,7 +10,7 @@ def tela_pipoca(screen):
     clock = pygame.time.Clock()
     fonte = pygame.font.SysFont("arial", 26)
 
-    fundo = carregar_imagem(os.path.join(IMAGENS_PIPOCA_DIR, "fundo_jogo.png"), (WIDTH, HEIGHT))
+    fundo = carregar_imagem(os.path.join(IMAGENS_PIPOCA_DIR, "cinema.png"), (WIDTH, HEIGHT))
 
     todos_sprites = pygame.sprite.Group()
     blocos_menores = pygame.sprite.Group()
@@ -49,7 +49,7 @@ def tela_pipoca(screen):
 
         jogador.update()
 
-        if coletados >= 20:
+        if coletados >= 15:
             state = MAPA
             running = False
         elif perdidos >= 10 or tempo_restante <= 0:

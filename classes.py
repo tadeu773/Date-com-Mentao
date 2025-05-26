@@ -183,9 +183,9 @@ class BlocoMaior(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         caminho_balde = os.path.join(IMAGENS_PIPOCA_DIR, "balde.png")
-        self.image = carregar_imagem(caminho_balde, (90, 100))
+        self.image = carregar_imagem(caminho_balde, (150, 150))
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH // 2, HEIGHT - 30)
+        self.rect.center = (WIDTH // 2, HEIGHT - 50)
         self.velocidade = 10
 
     def update(self):
@@ -200,7 +200,7 @@ class BlocoMenor(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         caminho_pipoca = os.path.join(IMAGENS_PIPOCA_DIR, "pipoca.png")
-        self.image = carregar_imagem(caminho_pipoca, (25, 25))
+        self.image = carregar_imagem(caminho_pipoca, (50, 50))
         self.rect = self.image.get_rect()
         self.resetar()
 

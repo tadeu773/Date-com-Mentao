@@ -176,6 +176,14 @@ def criar_cena_cu():
 
 def criar_cena_pre_jogo_pscina(callback_proxima_fase):
     global fala_mentao, botoes_atuais
-    fala_mentao = Mentao.fala("Irmao, eu duvido voce me vencer!")
-    botoes_atuais = [BotaoEscolha("Continuar", 1, callback_proxima_fase)]
+    fala_mentao = Mentao.fala("Irmão, eu duvido voce me vencer!")
+    botoes_atuais = [BotaoEscolha("*NADAR CONTRA MENTÃO*", 1, callback_proxima_fase)]
+
+def criar_cena_pos_jogo_pscina(callback_mapa, callback_nado):
+    global fala_mentao, botoes_atuais
+    fala_mentao = Mentao.fala("Caramba você é rapida mesmo! Gostei!")
+    botoes_atuais = [
+        BotaoEscolha("*NOVOS DIALOGOS NO INSPER*", 1, callback_mapa),
+        BotaoEscolha("*NADAR CONTRA MENTÃO*", 2, callback_nado)
+    ]
     

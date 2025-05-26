@@ -1,20 +1,14 @@
-
 import pygame
 import random
-import sys
 import os
 from config import *
 
-
-state = MADERO  # inicia no jogo
-
-
 # Dimensões da tela
-largura = 400
+largura = 800
 altura = 600
-colunas = 10
-bloco_largura = 40
-bloco_altura = 60
+bloco_largura = 70
+bloco_altura = 70
+velocidade_jogador = 6
 
 # Cores
 PRETO = (0, 0, 0)
@@ -22,156 +16,116 @@ VERMELHO = (200, 0, 0)
 VERDE = (0, 255, 0)
 BRANCO = (255, 255, 255)
 
-# Funções para carregar recursos com fallback
-def carregar_som(caminho):
-    if os.path.exists(caminho):
-        return pygame.mixer.Sound(caminho)
-    return None
-
-def carregar_imagem(caminho):
-    if os.path.exists(caminho):
-        return pygame.image.load(caminho)
-    return None
-
-# Sons
-pygame.mixer.init()
-som_contagem = [carregar_som("3.wav"), carregar_som("2.wav"), carregar_som("1.wav")]
-som_inicio = carregar_som("go.wav")
-som_colisao = carregar_som("colisao.wav")
-som_gameover = carregar_som("gameover.wav")
-som_vitoria = carregar_som("vitoria.wav")
-
-# Imagens
-img_game_over = carregar_imagem("game_over.png")
-img_vitoria = carregar_imagem("vitoria.png")
-img_bloco_vermelho = carregar_imagem("bloco_vermelho.png")
-img_bloco_verde = carregar_imagem("bloco_verde.png")
-
-# Tela
-tela = pygame.display.set_mode((largura, altura))
-pygame.display.set_caption("Desvie dos Blocos")
-
-# Jogador
-jogador_coluna = colunas // 2
-jogador_y = altura - bloco_altura
-
-# Blocos
-blocos = []
-tempo_para_criar = 30
-contador = 0
-velocidade = 4
-
 # Fonte
 fonte = pygame.font.SysFont(None, 48)
 fonte_pequena = pygame.font.SysFont(None, 32)
 
-# Pré-jogo
-tempo_pre_jogo = 3000
-inicio_preparacao = pygame.time.get_ticks()
-preparando = True
-cronometro_anterior = 4
 
-# Jogo
-tempo_total = 45000
-relogio = pygame.time.Clock()
-jogo_rodando = True
-tempo_inicial = 0
-vitoria = None
-derrota=True
+def jogo_madero(screen):
+    clock = pygame.time.Clock()
+    jogador_x = largura // 2 - bloco_largura // 2
+    jogador_y = altura - bloco_altura
+    blocos = []
+    contador = 0
+    tempo_total = 45000
+    tempo_inicio = pygame.time.get_ticks()
+    state = MADERO
 
-def jogo_madero(tela):
-    tela.fill(PRETO)
-    tempo_atual = pygame.time.get_ticks()
+    # Imagem da polícia
+    CAMINHO_IMAGEM_POLICIA = os.path.join("Madero", "policia.png")
+    img_policia = None
+    if os.path.exists(CAMINHO_IMAGEM_POLICIA):
+        img_policia = pygame.image.load(CAMINHO_IMAGEM_POLICIA).convert_alpha()
+        img_policia = pygame.transform.scale(img_policia, (bloco_largura, bloco_altura))
 
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            state   = QUIT
+    # Imagem do jogador
+    CAMINHO_IMAGEM_MENTAO = os.path.join("Madero", "van_mentao.png")
+    img_mentao = None
+    if os.path.exists(CAMINHO_IMAGEM_MENTAO):
+        img_mentao = pygame.image.load(CAMINHO_IMAGEM_MENTAO).convert_alpha()
+        img_mentao = pygame.transform.scale(img_mentao, (bloco_largura, bloco_altura))
 
-    if preparando:
-        tempo_restante = max(0, (tempo_pre_jogo - (tempo_atual - inicio_preparacao)) // 1000 + 1)
-        if tempo_restante != cronometro_anterior:
-            cronometro_anterior = tempo_restante
-            if 1 <= tempo_restante <= 3:
-                som = som_contagem[3 - tempo_restante]
-                if som: som.play()
-            elif tempo_restante == 0 and som_inicio:
-                som_inicio.play()
-        texto_inicio = fonte.render(str(tempo_restante), True, BRANCO)
-        tela.blit(texto_inicio, (largura // 2 - texto_inicio.get_width() // 2, altura // 2))
-        pygame.display.flip()
-        if tempo_atual - inicio_preparacao >= tempo_pre_jogo:
-            preparando = False
-            tempo_inicial = pygame.time.get_ticks()
-        relogio.tick(60)
-        
+    # Fundo
+    CAMINHO_IMAGEM_FUNDO = os.path.join("Fundos", "rua.jpg")
+    img_fundo = None
+    if os.path.exists(CAMINHO_IMAGEM_FUNDO):
+        img_fundo = pygame.image.load(CAMINHO_IMAGEM_FUNDO).convert()
+        img_fundo = pygame.transform.rotate(img_fundo, -90)
+        img_fundo = pygame.transform.scale(img_fundo, (largura, altura))
 
-    tempo_passado = tempo_atual - tempo_inicial
-    if tempo_passado >= tempo_total:
-        vitoria = True
-        state=MAPA
-        if som_vitoria: 
-            som_vitoria.play()
+    running = True
 
-        
+    while running:
+        tempo_atual = pygame.time.get_ticks()
+        tempo_passado = tempo_atual - tempo_inicio
+        tempo_restante = max(0, (tempo_total - tempo_passado) // 1000)
 
-    teclas = pygame.key.get_pressed()
-    if teclas[pygame.K_LEFT] and jogador_coluna > 0:
-        jogador_coluna -= 0.3
-    if teclas[pygame.K_RIGHT] and jogador_coluna < colunas - 1:
-        jogador_coluna += 0.3
-    jogador_coluna = max(0, min(jogador_coluna, colunas - 1))
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                state = QUIT
+                running = False
 
-    segundos = tempo_passado // 5000
-    velocidade = 4 + segundos
-    tempo_para_criar = max(10, 30 - segundos)
+        # Movimento do jogador
+        teclas = pygame.key.get_pressed()
+        if teclas[pygame.K_LEFT] and jogador_x > 0:
+            jogador_x -= velocidade_jogador
+        if teclas[pygame.K_RIGHT] and jogador_x < largura - bloco_largura:
+            jogador_x += velocidade_jogador
+        jogador_x = max(0, min(jogador_x, largura - bloco_largura))
 
-    for bloco in blocos:
-        bloco['y'] += velocidade
-    blocos = [bloco for bloco in blocos if bloco['y'] < altura]
+        # Velocidade dos blocos aumenta com o tempo
+        segundos = tempo_passado // 5000
+        velocidade_blocos = 4 + segundos
+        tempo_para_criar = max(10, 30 - segundos)
 
-    contador += 1
-    if contador >= tempo_para_criar:
-        nova_coluna = random.randint(0, colunas - 1)
-        blocos.append({'coluna': nova_coluna, 'y': 0})
-        contador = 0
+        # Atualiza blocos
+        for bloco in blocos:
+            bloco['y'] += velocidade_blocos
+        blocos = [b for b in blocos if b['y'] < altura]
 
-    colidiu = any(int(bloco['coluna']) == int(jogador_coluna) and bloco['y'] + bloco_altura > jogador_y for bloco in blocos)
-    if colidiu:
-        vitoria = False
-        derrota = True
-        if som_colisao: som_colisao.play()
-        if som_gameover: 
-            som_gameover.play()
-            vitoria=False
-            derrota=True
-        
+        # Cria novos blocos em qualquer posição horizontal
+        contador += 1
+        if contador >= tempo_para_criar:
+            novo_x = random.randint(0, largura - bloco_largura)
+            blocos.append({'x': novo_x, 'y': 0})
+            contador = 0
 
-    for bloco in blocos:
-        if 0 <= bloco['coluna'] < colunas:
-            x = bloco['coluna'] * bloco_largura
-            y = bloco['y']
-            if img_bloco_vermelho:
-                tela.blit(pygame.transform.scale(img_bloco_vermelho, (bloco_largura, bloco_altura)), (x, y))
-            else:
-                pygame.draw.rect(tela, VERMELHO, (x, y, bloco_largura, bloco_altura))
+        # Colisão
+        jogador_rect = pygame.Rect(jogador_x, jogador_y, bloco_largura, bloco_altura)
+        for bloco in blocos:
+            bloco_rect = pygame.Rect(bloco['x'], bloco['y'], bloco_largura, bloco_altura)
+            if jogador_rect.colliderect(bloco_rect):
+                state = GAMEOVER
+                running = False
 
-    x = int(jogador_coluna * bloco_largura)
-    if img_bloco_verde:
-        tela.blit(pygame.transform.scale(img_bloco_verde, (bloco_largura, bloco_altura)), (x, jogador_y))
-    else:
-        pygame.draw.rect(tela, VERDE, (x, jogador_y, bloco_largura, bloco_altura))
+        if tempo_passado >= tempo_total:
+            state = MAPA
+            running = False
 
-    tempo_restante = max(0, (tempo_total - tempo_passado) // 1000)
-    texto_tempo = fonte_pequena.render(f"Tempo: {tempo_restante}s", True, BRANCO)
-    tela.blit(texto_tempo, (10, 10))
-
-    pygame.display.flip()
-    relogio.tick(60)
-
-    if derrota:
-        if img_game_over:
-            tela.blit(pygame.transform.scale(img_game_over, (largura, altura)), (0, 0))
+        # Desenha fundo
+        if img_fundo:
+            screen.blit(img_fundo, (0, 0))
         else:
-            texto = fonte.render("Game Over", True, BRANCO)
-            tela.blit(texto, (largura//2 - texto.get_width()//2, altura//2))
+            screen.fill(PRETO)
+
+        # Desenha blocos da polícia
+        for bloco in blocos:
+            if img_policia:
+                screen.blit(img_policia, (bloco['x'], bloco['y']))
+            else:
+                pygame.draw.rect(screen, VERMELHO, (bloco['x'], bloco['y'], bloco_largura, bloco_altura))
+
+        # Desenha jogador
+        if img_mentao:
+            screen.blit(img_mentao, (jogador_x, jogador_y))
+        else:
+            pygame.draw.rect(screen, VERDE, (jogador_x, jogador_y, bloco_largura, bloco_altura))
+
+        # Tempo
+        texto_tempo = fonte_pequena.render(f"Tempo: {tempo_restante}s", True, BRANCO)
+        screen.blit(texto_tempo, (10, 10))
+
+        pygame.display.flip()
+        clock.tick(60)
+
     return state

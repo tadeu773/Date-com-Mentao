@@ -27,11 +27,9 @@ def game_over(screen):
 
     # Fonte e textos
     font = pygame.font.Font(None, 60)
-    titulo      = font.render("Date com Mentao", True, WHITE)
-    titulo_rect = titulo.get_rect(center=(WIDTH // 2, 40))
 
     # Botão "TENTAR NOVAMENTE"
-    button_width   = 200
+    button_width   = 450
     button_height  = 80
     button_x       = (WIDTH - button_width) // 2
     button_y       = HEIGHT - button_height - 40
@@ -58,7 +56,6 @@ def game_over(screen):
         screen.blit(background, background_rect)
         pygame.draw.rect(screen, RED, button_rect, border_radius=12)
         screen.blit(text_jogar, text_jogar_rect)
-        screen.blit(titulo, titulo_rect)
 
         pygame.display.flip()
 

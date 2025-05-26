@@ -6,6 +6,7 @@ from config import *
 from classes import *
 import narrativas
 import moods
+from pscina import *
 
 # --- Caminhos absolutos relativos a este script ---
 SCRIPT_DIR     = path.dirname(path.abspath(__file__))
@@ -41,7 +42,14 @@ def pre_jogo_piscina(screen):
         state   = PSCINA
         running = False
 
-    narrativas.criar_cena_pre_jogo_pscina(sair_para_psci)
+
+    if progresso_jogador["piscina completa"]:
+        narrativas.criar_cena_pos_jogo_pscina(
+            sair_para_mapa,
+            sair_para_psci 
+    )
+    else:
+        narrativas.criar_cena_pre_jogo_pscina(sair_para_psci)
 
     state   = PRE_PSCI
     running = True

@@ -12,6 +12,7 @@ from pscina import *
 from pre_jogo_piscina import *
 from Jogo_JK import *
 from madero import *
+from gameover import *
 
 
 pygame.mixer.init()
@@ -37,6 +38,8 @@ while state != QUIT:
         state = tela_pipoca(tela)
     if state == MADERO:
         state = jogo_madero(tela)
+    if state == GAMEOVER:
+        state = game_over(tela)
 
     
 # ===== Finalização =====
