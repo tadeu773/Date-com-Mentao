@@ -14,6 +14,9 @@ from Jogo_JK import *
 from madero import *
 from gameover import *
 from pre_jk import *
+from pre_madero import *
+from insperina import *
+from tela_final import *
 
 
 pygame.mixer.init()
@@ -43,6 +46,13 @@ while state != QUIT:
         state = game_over(tela)
     if state == PRE_JK:
         state = pre_jogo_jk(tela)
+    if state == PRE_MADERO:
+        state = pre_madero(tela)
+    if state == INSPERINA:
+        state = tela_insperina(tela)
+    if state == TELA_FINAL:
+        state = tela_final(tela)
+    
 
     
 # ===== Finalização =====

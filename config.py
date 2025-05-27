@@ -21,7 +21,9 @@ progresso_jogador = {
     "madero": False,
     "jk": False,
     "piscina completa": False,
-    "jk completo": False
+    "jk completo": False,
+    "madero completo": False,
+    "insperina desbloqueada": False
 }
 
 # Estados para controle do fluxo da aplicação
@@ -35,3 +37,6 @@ GAMEOVER = 6
 JK = 7
 MADERO = 8
 PRE_JK = 9
+PRE_MADERO = 10
+INSPERINA = 11
+TELA_FINAL = 12

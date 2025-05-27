@@ -20,6 +20,15 @@ BRANCO = (255, 255, 255)
 fonte = pygame.font.SysFont(None, 48)
 fonte_pequena = pygame.font.SysFont(None, 32)
 
+def render_text_outline(surface, text, font, pos, fg, outline, width=2):
+    base = font.render(text, True, fg)
+    x, y = pos
+    for dx in range(-width, width+1):
+        for dy in range(-width, width+1):
+            if dx or dy:
+                sombra = font.render(text, True, outline)
+                surface.blit(sombra, (x + dx, y + dy))
+    surface.blit(base, (x, y))
 
 def jogo_madero(screen):
     clock = pygame.time.Clock()
@@ -53,6 +62,22 @@ def jogo_madero(screen):
         img_fundo = pygame.transform.rotate(img_fundo, -90)
         img_fundo = pygame.transform.scale(img_fundo, (largura, altura))
 
+    # CONTAGEM REGRESSIVA
+    for cnt in ("3", "2", "1", "VAI!"):
+        if img_fundo:
+            screen.blit(img_fundo, (0, 0))
+        else:
+            screen.fill(PRETO)
+
+        render_text_outline(screen, "Use as setas para se movimentar!", fonte_pequena,
+                            (largura // 2 - 190, altura // 2 - 80), BRANCO, PRETO)
+        render_text_outline(screen, "Desvie da polícia!", fonte_pequena,
+                            (largura // 2 - 110, altura // 2 - 40), BRANCO, PRETO)
+        render_text_outline(screen, cnt, fonte,
+                            (largura // 2 - 20, altura // 2 + 30), BRANCO, PRETO)
+        pygame.display.flip()
+        pygame.time.delay(800)
+
     running = True
 
     while running:
@@ -83,7 +108,7 @@ def jogo_madero(screen):
             bloco['y'] += velocidade_blocos
         blocos = [b for b in blocos if b['y'] < altura]
 
-        # Cria novos blocos em qualquer posição horizontal
+        # Cria novos blocos
         contador += 1
         if contador >= tempo_para_criar:
             novo_x = random.randint(0, largura - bloco_largura)
@@ -100,6 +125,7 @@ def jogo_madero(screen):
 
         if tempo_passado >= tempo_total:
             state = MAPA
+            progresso_jogador["madero completo"] = True
             running = False
 
         # Desenha fundo
@@ -108,14 +134,14 @@ def jogo_madero(screen):
         else:
             screen.fill(PRETO)
 
-        # Desenha blocos da polícia
+        # Blocos da polícia
         for bloco in blocos:
             if img_policia:
                 screen.blit(img_policia, (bloco['x'], bloco['y']))
             else:
                 pygame.draw.rect(screen, VERMELHO, (bloco['x'], bloco['y'], bloco_largura, bloco_altura))
 
-        # Desenha jogador
+        # Jogador
         if img_mentao:
             screen.blit(img_mentao, (jogador_x, jogador_y))
         else:
@@ -127,5 +153,19 @@ def jogo_madero(screen):
 
         pygame.display.flip()
         clock.tick(60)
+
+    # MENSAGEM FINAL
+    if state == MAPA:
+        if img_fundo:
+            screen.blit(img_fundo, (0, 0))
+        else:
+            screen.fill(PRETO)
+
+        render_text_outline(screen, "Você conseguiu!", fonte,
+                            (largura // 2 - 150, altura // 2 - 40), BRANCO, PRETO)
+        render_text_outline(screen, "Novos diálogos no Insper desbloqueados!", fonte_pequena,
+                            (largura // 2 - 200, altura // 2 + 20), BRANCO, PRETO)
+        pygame.display.flip()
+        pygame.time.delay(5000)
 
     return state
