@@ -85,7 +85,7 @@ def criar_cena_ignorado():
     mudar_mood("bravo")
     fala_mentao = Mentao.fala("Que mina estranha!")
     botoes_atuais = [
-        BotaoEscolha("*GAME OVER*", 1, criar_fim_pastel),
+        BotaoEscolha("*GAME OVER*", 1, callback_gameover_global),
     ]
 
 def criar_cena_bet():
@@ -121,7 +121,7 @@ def criar_cena_fora():
     mudar_mood("briga")
     fala_mentao = Mentao.fala("Eu sei que sou lindo, mas nem te conheço! Sai fora!")
     botoes_atuais = [
-        BotaoEscolha("GAME OVER", 2, criar_cena_nadar),
+        BotaoEscolha("GAME OVER", 2, callback_gameover_global),
     ]
 #FIM CAMINHOS ALTERNATIVOS PRE PISCINA
 #INICIO CAMINHOS JK
