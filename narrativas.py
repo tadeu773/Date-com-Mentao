@@ -25,7 +25,7 @@ def iniciar_narrativa_insper(callback_gameover, callback_mapa):
     elif not progresso_jogador["madero"]:
         criar_inicial_madero()
     else:
-        iniciar_narrativa_insperina(callback_mapa, callback_gameover)
+        pre_insperina(callback_mapa)
 
 
 

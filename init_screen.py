@@ -17,6 +17,17 @@ pygame.mixer.music.load(MUSIC_FILE)
 pygame.mixer.music.play(-1)
 
 def init_screen(screen):
+    global progresso_jogador
+    progresso_jogador = {
+        "piscina": False,
+        "madero": False,
+        "jk": False,
+        "piscina completa": False,
+        "jk completo": False,
+        "madero completo": False,
+        "insperina desbloqueada": False
+        }
+    
     clock = pygame.time.Clock()
 
     # Carrega e ajusta o fundo de tela inicial
